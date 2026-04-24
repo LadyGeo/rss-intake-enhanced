@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSS Intake</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="feed-status" role="status" aria-live="polite">
+        <span id="count" class="footer-count">0 items</span>
+        <span id="generated" class="footer-meta"></span>
+        <button
+          type="button"
+          id="toggle-hidden-btn"
+          class="footer-hidden-btn hidden"
+          title="Show hidden articles"
+        >
+          Hidden (<span id="hidden-count">0</span>)
+        </button>
+      </div>
+      <nav class="nav-tabs">
+        <button type="button" class="nav-tab active" data-tab="digest">Digest</button>
+        <button type="button" class="nav-tab" data-tab="tags">Tags</button>
+        <button type="button" class="nav-tab" data-tab="feeds">Manage Feeds</button>
+      </nav>
+      <div class="header-brand" id="header-brand">
+        <h1 class="logo">RSS Intake</h1>
+      </div>
+      <div class="controls" id="header-controls">
+        <div class="control-group">
+          <label class="control-label">Time window</label>
+          <select id="hours">
+            <option value="24" selected>Last 24 hours</option>
+            <option value="48">Last 48 hours</option>
+            <option value="72">Last 3 days</option>
+            <option value="168">Last 7 days</option>
+            <option value="720">Last 30 days</option>
+            <option value="custom">Custom range</option>
+          </select>
+        </div>
+        <div id="custom-range-wrap" class="control-group custom-range-wrap hidden">
+          <label class="control-label">From</label>
+          <input type="date" id="date-from" aria-label="Start date" />
+          <label class="control-label">To</label>
+          <input type="date" id="date-to" aria-label="End date" />
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="search">Search</label>
+          <input
+            type="text"
+            id="search"
+            placeholder="Fuzzy search title + snippet…"
+            aria-label="Fuzzy search title and snippet"
+          />
+        </div>
+        <div class="control-group multiselect-wrap">
+          <label class="control-label">Country</label>
+          <div class="multiselect" id="country-multiselect">
+            <button
+              type="button"
+              class="multiselect-trigger"
+              id="country-trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              All countries
+            </button>
+            <div class="multiselect-panel" id="country-panel" role="listbox">
+              <label class="multiselect-option">
+                <input type="checkbox" id="country-all" checked />
+                <span>All countries</span>
+              </label>
+              <div id="country-options"></div>
+            </div>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="feed-priority">Feed priority</label>
+          <select id="feed-priority" aria-label="Filter by feed source priority">
+            <option value="all" selected>All priorities</option>
+            <option value="critical">Critical feeds</option>
+            <option value="high">High feeds</option>
+            <option value="medium">Medium feeds</option>
+          </select>
+        </div>
+        <div class="control-group multiselect-wrap">
+          <label class="control-label">Source</label>
+          <div class="multiselect" id="source-multiselect">
+            <button
+              type="button"
+              class="multiselect-trigger"
+              id="source-trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              All sources
+            </button>
+            <div class="multiselect-panel" id="source-panel" role="listbox">
+              <label class="multiselect-option">
+                <input type="checkbox" id="source-all" checked />
+                <span>All sources</span>
+              </label>
+              <div id="source-options"></div>
+            </div>
+          </div>
+        </div>
+        <div class="control-group control-focus">
+          <label class="focus-toggle">
+            <input
+              type="checkbox"
+              id="focus"
+              checked
+              aria-label="Focus on ecommerce and journey-relevant items"
+            />
+            <span class="focus-label">Focus on ecommerce / journey</span>
+          </label>
+        </div>
+        <div class="control-group control-focus">
+          <label class="focus-toggle">
+            <input
+              type="checkbox"
+              id="include-archived"
+              aria-label="Include archived items in the digest list"
+            />
+            <span class="focus-label">Include archived</span>
+          </label>
+        </div>
+        <div class="control-group">
+          <label class="control-label">&nbsp;</label>
+          <button
+            type="button"
+            id="digest-run-btn"
+            class="btn-digest-run"
+            aria-label="Run digest (fetch all feeds)"
+          >
+            Run digest
+          </button>
+          <button type="button" id="reload-btn" class="btn-reload" aria-label="Reload digest">
+            Reload
+          </button>
+          <button
+            type="button"
+            id="export-json-btn"
+            class="btn-reload"
+            aria-label="Export current view as JSON"
+          >
+            Export JSON
+          </button>
+          <button
+            type="button"
+            id="export-csv-btn"
+            class="btn-reload"
+            aria-label="Export current view as CSV"
+          >
+            Export CSV
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section id="view-digest" class="view active">
+        <div id="loading" class="loading">
+          <span class="loading-spinner"></span>
+          Loading…
+        </div>
+        <div id="empty" class="empty hidden">
+          <p>No items in this window.</p>
+          <p class="empty-hint">
+            Click <strong>Run digest</strong> above to fetch all feeds, or switch to Manage Feeds to
+            add more.
+          </p>
+        </div>
+        <div id="content" class="content hidden"></div>
+      </section>
+
+      <section id="view-tags" class="view">
+        <div class="tags-panel">
+          <div class="tags-list-header">
+            <h2>Tag Taxonomy</h2>
+            <p class="tags-hint">
+              Tag surfaces and operational levers used to categorize items. Add custom tags below.
+            </p>
+          </div>
+          <div class="tags-add">
+            <h3>Add tag</h3>
+            <form id="tag-form" class="tag-form">
+              <div class="form-row">
+                <label>
+                  <span>Type</span>
+                  <select id="tag-type" required>
+                    <option value="surface">Surface tag</option>
+                    <option value="lever">Operational Lever</option>
+                  </select>
+                </label>
+                <label>
+                  <span>ID (lowercase, hyphenated)</span>
+                  <input
+                    type="text"
+                    id="tag-id"
+                    required
+                    placeholder="e.g. my-surface (auto-converted to lowercase hyphenated)"
+                  />
+                </label>
+                <label>
+                  <span>Label</span>
+                  <input type="text" id="tag-label" required placeholder="e.g. My Surface" />
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>Keywords (comma-separated, for auto-tagging)</span>
+                  <input type="text" id="tag-keywords" placeholder="keyword1, keyword2, keyword3" />
+                </label>
+              </div>
+              <button type="submit" class="btn-add">Add tag</button>
+            </form>
+          </div>
+          <div class="tags-ignore-section">
+            <h3>Keywords to ignore</h3>
+            <p class="tags-ignore-hint">
+              Articles matching these keywords are always excluded from the digest.
+            </p>
+            <div class="tags-ignore-add">
+              <input type="text" id="ignore-keyword-input" placeholder="keyword to ignore" />
+              <button type="button" id="ignore-keyword-add" class="btn-add">Add</button>
+            </div>
+            <div class="tags-ignore-list" id="tags-ignore-list">
+              <div class="tags-loading">Loading…</div>
+            </div>
+          </div>
+          <div class="tags-sections">
+            <div class="tags-section">
+              <h3>Tag surfaces</h3>
+              <div class="tags-list" id="tags-surfaces-list">
+                <div class="tags-loading">Loading…</div>
+              </div>
+            </div>
+            <div class="tags-section">
+              <h3>Operational Levers</h3>
+              <div class="tags-list" id="tags-levers-list">
+                <div class="tags-loading">Loading…</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-feeds" class="view">
+        <div class="feeds-panel">
+          <div class="feeds-list-header">
+            <h2>RSS Feeds</h2>
+            <p class="feeds-hint">
+              Feeds listed here are parsed by the digest. Add custom feeds or remove ones you don't
+              need.
+            </p>
+            <button
+              type="button"
+              id="ingest-btn"
+              class="btn-ingest"
+              aria-label="Fetch all feeds now"
+            >
+              Fetch feeds now
+            </button>
+            <p id="ingest-last-run" class="feeds-ingest-status" aria-live="polite"></p>
+          </div>
+          <div class="feeds-add">
+            <h3>Add feed</h3>
+            <form id="feed-form" class="feed-form">
+              <div class="form-row">
+                <label>
+                  <span>Name</span>
+                  <input
+                    type="text"
+                    id="feed-name"
+                    required
+                    placeholder="e.g. EU Commission Press"
+                  />
+                </label>
+                <label>
+                  <span>URL</span>
+                  <input
+                    type="url"
+                    id="feed-url"
+                    required
+                    placeholder="https://example.com/feed.xml"
+                  />
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>Source type</span>
+                  <select id="feed-source-type" required>
+                    <option value="regulator">Government Regulator</option>
+                    <option value="law_firm">Legal & Regulatory</option>
+                    <option value="standards">Standards & Policy</option>
+                    <option value="watchdog">Industry Watchdog</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Country (optional)</span>
+                  <select id="feed-country">
+                    <option value="">—</option>
+                  </select>
+                </label>
+              </div>
+              <button type="submit" class="btn-add">Add feed</button>
+            </form>
+          </div>
+          <div class="feeds-list" id="feeds-list">
+            <div class="feeds-loading">Loading feeds…</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="hidden-panel" class="hidden-panel hidden">
+      <div class="hidden-panel-header">
+        <h3>Hidden articles</h3>
+        <button type="button" id="restore-all-hidden" class="btn-restore-all">Restore all</button>
+        <button type="button" id="collapse-hidden" class="btn-collapse" aria-label="Collapse">
+          −
+        </button>
+      </div>
+      <div id="hidden-list" class="hidden-list"></div>
+    </div>
+
+    <script src="keyword-lists.js"></script>
+    <script src="keyword-i18n.js"></script>
+    <script src="thisisTHEapp.js"></script>
+  </body>
+</html>

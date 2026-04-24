@@ -1,0 +1,72 @@
+{
+  "folders": [
+    {
+      "name": "rss-intake",
+      "path": "/Users/suzannahrochelle/Documents/Coding Projects/rss-intake"
+    },
+    {
+      "name": "rss-intake-enhanced",
+      "path": "/Users/suzannahrochelle/Documents/Coding Projects/rss-intake-enhanced"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.DS_Store": true,
+      "**/.git": true,
+      "**/node_modules": true,
+      "**/.next": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/coverage": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/.next": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/coverage": true,
+      "**/package-lock.json": true,
+      "**/pnpm-lock.yaml": true,
+      "**/yarn.lock": true
+    },
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact"
+    ],
+    "eslint.workingDirectories": [
+      {
+        "directory": "/Users/suzannahrochelle/Documents/Coding Projects/rss-intake",
+        "changeProcessCWD": true
+      },
+      {
+        "directory": "/Users/suzannahrochelle/Documents/Coding Projects/rss-intake-enhanced",
+        "changeProcessCWD": true
+      }
+    ],
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+      "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true
+  }
+}
