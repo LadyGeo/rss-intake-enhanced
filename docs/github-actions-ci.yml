@@ -1,0 +1,19 @@
+# Paste into GitHub: Actions → New workflow → configure ci.yml
+# (Do not commit under .github/workflows/ unless your git credential has the "workflow" scope.)
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify-public-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify public UI bundle
+        run: bash scripts/verify-public-ui.sh

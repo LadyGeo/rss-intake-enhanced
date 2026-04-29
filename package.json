@@ -1,0 +1,12 @@
+{
+  "name": "rss-intake-enhanced",
+  "private": true,
+  "description": "RSS Intake enhanced web UI (static assets; requires companion API for full functionality).",
+  "scripts": {
+    "preview": "npx --yes serve public -l 4173",
+    "verify": "bash scripts/verify-public-ui.sh"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

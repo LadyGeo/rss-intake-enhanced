@@ -1,3 +1,28 @@
+/**
+ * Static hosts (e.g. `python3 -m http.server`) only serve files; `/api/*` lives on the Express app
+ * (RSS Intake.app or `npm run serve`). Point the UI at that origin:
+ *   http://127.0.0.1:4173/?api=http://127.0.0.1:YOUR_PORT
+ * or set localStorage key `rss-intake-api-base` to the same origin (no trailing slash).
+ */
+(function resolveApiBaseForStaticHost() {
+  let base = "";
+  try {
+    const q = new URLSearchParams(window.location.search).get("api");
+    const ls = localStorage.getItem("rss-intake-api-base");
+    base = String(q || ls || "").trim().replace(/\/$/, "");
+  } catch {
+    /* ignore */
+  }
+  if (!base) return;
+  const orig = window.fetch.bind(window);
+  window.fetch = function (input, init) {
+    if (typeof input === "string" && input.startsWith("/api")) {
+      return orig(base + input, init);
+    }
+    return orig(input, init);
+  };
+})();
+
 const hoursEl = document.getElementById("hours");
 const customRangeWrapEl = document.getElementById("custom-range-wrap");
 const dateFromEl = document.getElementById("date-from");
@@ -2406,7 +2431,8 @@ async function load() {
     updateIngestFooter(ingestHist.runs?.[0]);
     render(data.items ?? []);
   } catch (e) {
-    emptyEl.textContent = "Failed to load. Is the server running?";
+    emptyEl.textContent =
+      "Failed to load. Start RSS Intake.app (or your API server), note its URL (e.g. http://127.0.0.1:50163), then open this page with ?api= that origin, or set localStorage rss-intake-api-base.";
     emptyEl.classList.remove("hidden");
   } finally {
     loadingEl.classList.add("hidden");
