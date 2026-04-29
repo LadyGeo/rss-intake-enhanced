@@ -10,7 +10,7 @@ This repository holds the **enhanced web UI** for RSS Intake: HTML, CSS, and cli
 
 ## Developers: preview the UI against a running API
 
-The canonical bundle is under **`public/`** (newest tabs and layout).
+The **canonical** bundle for packaging is **`public/`**. Root **`index.html`** (and matching JS/CSS) are kept **in sync** with `public/` so if you run `python3 -m http.server` from the **repo root**, you get the same **five-tab** UI as in `public/` (Digest, Tags, Manage Feeds, Coverage, Trends).
 
 ```bash
 npm install   # optional; only needed for npm scripts
@@ -45,7 +45,7 @@ Then use **`?api=`** or **`rss-intake-api-base`** as above.
 | Path | Purpose |
 |------|--------|
 | **`public/`** | **Source of truth** for the shipped UI (`index.html`, `thisisTHEapp.js`, styles, keywords). |
-| Root `index.html`, `thisisTHEapp.js`, … | Legacy / convenience copies; keep them aligned with `public/` when you change the UI. |
+| Root `index.html`, `thisisTHEapp.js`, … | **Mirrors `public/`** for the same five-tab app when you serve from the repo root; update both whenever you change the UI. |
 | `data/` | Example digests / local data (not required to run the UI). |
 | `docs/` | Extra technical notes. |
 

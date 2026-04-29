@@ -1,8 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f5f7" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
     <title>RSS Intake</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -24,6 +27,8 @@
         <button type="button" class="nav-tab active" data-tab="digest">Digest</button>
         <button type="button" class="nav-tab" data-tab="tags">Tags</button>
         <button type="button" class="nav-tab" data-tab="feeds">Manage Feeds</button>
+        <button type="button" class="nav-tab" data-tab="insights">Coverage</button>
+        <button type="button" class="nav-tab" data-tab="trends">Trends</button>
       </nav>
       <div class="header-brand" id="header-brand">
         <h1 class="logo">RSS Intake</h1>
@@ -76,14 +81,75 @@
             </div>
           </div>
         </div>
-        <div class="control-group">
-          <label class="control-label" for="feed-priority">Feed priority</label>
-          <select id="feed-priority" aria-label="Filter by feed source priority">
-            <option value="all" selected>All priorities</option>
-            <option value="critical">Critical feeds</option>
-            <option value="high">High feeds</option>
-            <option value="medium">Medium feeds</option>
-          </select>
+        <div class="control-group multiselect-wrap">
+          <label class="control-label">Region</label>
+          <div class="multiselect" id="region-multiselect">
+            <button
+              type="button"
+              class="multiselect-trigger"
+              id="region-trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              All regions
+            </button>
+            <div class="multiselect-panel" id="region-panel" role="listbox">
+              <div id="region-options"></div>
+            </div>
+          </div>
+        </div>
+        <div class="control-group multiselect-wrap">
+          <label class="control-label" id="tag-filter-label">Tags</label>
+          <div class="multiselect" id="tag-multiselect">
+            <button
+              type="button"
+              class="multiselect-trigger"
+              id="tag-trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-describedby="tag-filter-label"
+              title="Open the menu to filter by surface tag or operational lever. “All tags” shows every item."
+            >
+              All tags
+            </button>
+            <div class="multiselect-panel" id="tag-panel" role="listbox">
+              <label class="multiselect-option">
+                <input type="checkbox" id="tag-all" checked />
+                <span>All tags</span>
+              </label>
+              <div id="tag-options"></div>
+            </div>
+          </div>
+        </div>
+        <div class="control-group multiselect-wrap curated-wrap">
+          <label class="control-label">Compliance Gate</label>
+          <div class="multiselect curated-multiselect" id="curated-multiselect">
+            <label class="curated-toggle" for="curated-enabled">
+              <input type="checkbox" id="curated-enabled" checked />
+              <span>Curated mode</span>
+            </label>
+            <button
+              type="button"
+              class="multiselect-trigger curated-trigger"
+              id="curated-trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              Curated filters
+            </button>
+            <span
+              id="curated-summary"
+              class="curated-summary"
+              title="How many compliance topic toggles are on (OR gate). Not a count of articles."
+              >Compliance topics: 45 of 45 selected</span>
+            <div class="multiselect-panel curated-panel" id="curated-panel" role="listbox">
+              <div class="curated-panel-head">
+                <strong>Curated filters</strong>
+                <button type="button" id="curated-reset-btn" class="curated-reset-btn">Reset</button>
+              </div>
+              <div id="curated-groups" class="curated-groups"></div>
+            </div>
+          </div>
         </div>
         <div class="control-group multiselect-wrap">
           <label class="control-label">Source</label>
@@ -106,16 +172,37 @@
             </div>
           </div>
         </div>
-        <div class="control-group control-focus">
-          <label class="focus-toggle">
-            <input
-              type="checkbox"
-              id="focus"
-              checked
-              aria-label="Focus on ecommerce and journey-relevant items"
-            />
-            <span class="focus-label">Focus on ecommerce / journey</span>
-          </label>
+        <div class="control-group">
+          <label class="control-label" for="press-signal-filter">Press signal</label>
+          <select id="press-signal-filter" aria-label="Filter by press signal coverage count">
+            <option value="1" selected>All stories</option>
+            <option value="2">2+ sources</option>
+            <option value="3">3+ sources</option>
+            <option value="5">5+ sources</option>
+            <option value="10">10+ sources</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="press-signal-sort">Sort</label>
+          <select id="press-signal-sort" aria-label="Sort stories in the digest list">
+            <option value="default" selected>Default ordering</option>
+            <option value="enforcement_first">Matched phrases: enforcement first</option>
+            <option value="signal_strength_desc">Matched phrases: strongest signal first</option>
+            <option value="signal_desc">Press signal: highest first</option>
+            <option value="signal_asc">Press signal: lowest first</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="signal-keyword-filter">Matched phrases</label>
+          <select id="signal-keyword-filter" aria-label="Filter items by matched keyword type">
+            <option value="all" selected>All items</option>
+            <option value="has_any">Has any matched phrase</option>
+            <option value="enforcement">Has enforcement phrase</option>
+            <option value="deadline_timing">Has deadline or effective-date phrase</option>
+            <option value="litigation">Has litigation phrase</option>
+            <option value="proposal">Has proposal or consultation phrase</option>
+            <option value="domain_journey">Has PDP / pricing / checkout / shipping / privacy / a11y phrase</option>
+          </select>
         </div>
         <div class="control-group control-focus">
           <label class="focus-toggle">
@@ -127,7 +214,7 @@
             <span class="focus-label">Include archived</span>
           </label>
         </div>
-        <div class="control-group">
+        <div class="control-group control-actions">
           <label class="control-label">&nbsp;</label>
           <button
             type="button"
@@ -136,9 +223,6 @@
             aria-label="Run digest (fetch all feeds)"
           >
             Run digest
-          </button>
-          <button type="button" id="reload-btn" class="btn-reload" aria-label="Reload digest">
-            Reload
           </button>
           <button
             type="button"
@@ -216,6 +300,41 @@
                 </label>
               </div>
               <button type="submit" class="btn-add">Add tag</button>
+            </form>
+          </div>
+          <div class="tags-add">
+            <h3>Manage operational levers</h3>
+            <p class="tags-hint">
+              Add custom levers for your workflow. You can also edit keywords inline below each
+              lever, or delete custom levers.
+            </p>
+            <form id="lever-form" class="tag-form">
+              <div class="form-row">
+                <label>
+                  <span>Lever ID (lowercase, hyphenated)</span>
+                  <input
+                    type="text"
+                    id="lever-id"
+                    required
+                    placeholder="e.g. consent-redesign"
+                  />
+                </label>
+                <label>
+                  <span>Lever label</span>
+                  <input type="text" id="lever-label" required placeholder="e.g. Consent Redesign" />
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>Keywords (comma-separated)</span>
+                  <input
+                    type="text"
+                    id="lever-keywords"
+                    placeholder="workflow, redesign, consent mechanism"
+                  />
+                </label>
+              </div>
+              <button type="submit" class="btn-add">Add operational lever</button>
             </form>
           </div>
           <div class="tags-ignore-section">
@@ -309,8 +428,293 @@
               <button type="submit" class="btn-add">Add feed</button>
             </form>
           </div>
+          <div class="feeds-manage-toolbar" id="feeds-manage-toolbar">
+            <div class="feeds-toolbar-field feeds-toolbar-field-grow">
+              <label for="feeds-filter-search">Search</label>
+              <input
+                type="search"
+                id="feeds-filter-search"
+                placeholder="Name, URL, country, source…"
+                autocomplete="off"
+              />
+            </div>
+            <div class="feeds-toolbar-field">
+              <label for="feeds-filter-region">Region</label>
+              <select id="feeds-filter-region" aria-label="Filter feeds by region group">
+                <option value="all" selected>All regions</option>
+                <option value="emeia">EMEIA</option>
+                <option value="gc">GC</option>
+                <option value="rpac">RPAC</option>
+                <option value="amr">AMR</option>
+                <option value="other">Other geographies</option>
+                <option value="none">No country</option>
+              </select>
+            </div>
+            <div class="feeds-toolbar-field">
+              <label for="feeds-filter-source">Source type</label>
+              <select id="feeds-filter-source" aria-label="Filter feeds by source type">
+                <option value="all" selected>All source types</option>
+              </select>
+            </div>
+            <div class="feeds-toolbar-field">
+              <label for="feeds-sort">Sort</label>
+              <select id="feeds-sort" aria-label="Sort feeds within each region">
+                <option value="name_asc" selected>Name (A–Z)</option>
+                <option value="name_desc">Name (Z–A)</option>
+                <option value="country_asc">Country (A–Z)</option>
+                <option value="source_asc">Source type (A–Z)</option>
+                <option value="health_desc">Health (issues first)</option>
+              </select>
+            </div>
+          </div>
           <div class="feeds-list" id="feeds-list">
             <div class="feeds-loading">Loading feeds…</div>
+          </div>
+        </div>
+      </section>
+      <section id="view-insights" class="view">
+        <div class="insights-panel">
+          <div class="feeds-list-header">
+            <h2>Regulatory Coverage</h2>
+            <p class="feeds-hint">
+              Dynamic view of regulatory bodies currently covered by configured feed sources.
+            </p>
+            <button
+              type="button"
+              id="insights-generate-digest-btn"
+              class="btn-ingest"
+              title="Fetch all feeds and write data/digest-YYYY-MM-DD.md on the server"
+              aria-label="Generate and save the digest markdown file"
+            >
+              Generate digest file
+            </button>
+            <p class="insights-action-hint">
+              Runs a fresh ingest, then updates today&apos;s <code>digest-YYYY-MM-DD.md</code> on the
+              server.
+            </p>
+          </div>
+          <div class="insights-stats" id="insights-stats">
+            <div class="insight-stat">
+              <div class="insight-stat-value" id="insight-total-feeds">0</div>
+              <div class="insight-stat-label">Total Feeds</div>
+            </div>
+            <div class="insight-stat">
+              <div class="insight-stat-value" id="insight-countries">0</div>
+              <div class="insight-stat-label">Countries Covered</div>
+            </div>
+            <div class="insight-stat">
+              <div class="insight-stat-value" id="insight-regulators">0</div>
+              <div class="insight-stat-label">Regulatory Bodies</div>
+            </div>
+          </div>
+          <div class="insights-filters">
+            <input
+              id="insights-search"
+              type="text"
+              placeholder="Search regulator, country, region, domain, site…"
+              aria-label="Search insight rows"
+            />
+            <select id="insights-country-filter" aria-label="Filter insights by country">
+              <option value="">All countries</option>
+            </select>
+            <select id="insights-source-filter" aria-label="Filter insights by source type">
+              <option value="">All source types</option>
+            </select>
+            <select id="insights-sort" aria-label="Sort insight rows">
+              <option value="country_asc" selected>Sort: Country A–Z</option>
+              <option value="region_group">Sort: Region (EMEIA → …)</option>
+              <option value="name_asc">Sort: Feed name A–Z</option>
+              <option value="site_asc">Sort: Source site A–Z</option>
+              <option value="source_asc">Sort: Source type A–Z</option>
+              <option value="health_desc">Sort: Health (issues first)</option>
+            </select>
+            <div
+              class="insights-region-strip"
+              id="insights-region-strip"
+              role="group"
+              aria-label="Filter by region group (leave all unchecked for all regions)"
+            >
+              <span class="insights-region-strip-label">Regions</span>
+              <label class="insights-region-opt"
+                ><input type="checkbox" class="insights-region-cb" value="emeia" /> EMEIA</label
+              >
+              <label class="insights-region-opt"
+                ><input type="checkbox" class="insights-region-cb" value="gc" /> GC</label
+              >
+              <label class="insights-region-opt"
+                ><input type="checkbox" class="insights-region-cb" value="rpac" /> RPAC</label
+              >
+              <label class="insights-region-opt"
+                ><input type="checkbox" class="insights-region-cb" value="amr" /> AMR</label
+              >
+              <label class="insights-region-opt"
+                ><input type="checkbox" class="insights-region-cb" value="other" /> Other</label
+              >
+              <label class="insights-region-opt"
+                ><input type="checkbox" class="insights-region-cb" value="none" /> No country</label
+              >
+            </div>
+          </div>
+          <div class="insights-table-wrap">
+            <table class="insights-table">
+              <thead>
+                <tr>
+                  <th>Country</th>
+                  <th>Regulatory Body / Feed</th>
+                  <th>Source Type</th>
+                  <th>Domain</th>
+                  <th>Health</th>
+                  <th title="Hostname from the feed URL (e.g. regulator site vs Google News)">Source site</th>
+                  <th>RSS URL</th>
+                </tr>
+              </thead>
+              <tbody id="insights-table-body"></tbody>
+            </table>
+          </div>
+          <div id="insights-empty" class="feeds-loading hidden">No insight rows match filters.</div>
+          <div class="insights-gap-section">
+            <h3>Country Domain Coverage Gaps</h3>
+            <p class="feeds-hint">
+              Shows which regulatory domains each country has covered vs missing based on current feed
+              configuration.
+            </p>
+            <div class="insights-table-wrap">
+              <table class="insights-table">
+                <thead>
+                  <tr>
+                    <th>Country</th>
+                    <th>Covered Domains</th>
+                    <th>Missing Domains</th>
+                    <th>Coverage</th>
+                  </tr>
+                </thead>
+                <tbody id="insights-gap-table-body"></tbody>
+              </table>
+            </div>
+            <div id="insights-gap-empty" class="feeds-loading hidden">
+              No country-domain coverage data available.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-trends" class="view">
+        <div class="trends-panel">
+          <div class="feeds-list-header">
+            <h2>Trends &amp; overlapping stories</h2>
+            <p class="feeds-hint">
+              Volume trends for the selected window, plus groups of items that likely cover the same
+              context (country + primary journey surface + similar title wording). Ingest still
+              dedupes exact title+domain matches; this view finds looser overlaps across feeds.
+            </p>
+          </div>
+          <div class="trends-toolbar">
+            <div class="control-group">
+              <label class="control-label" for="trends-hours">Window</label>
+              <select id="trends-hours" aria-label="Analytics time window">
+                <option value="24">Last 24 hours</option>
+                <option value="72">Last 3 days</option>
+                <option value="168" selected>Last 7 days</option>
+                <option value="336">Last 14 days</option>
+                <option value="720">Last 30 days</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="trends-compare-mode">Compare to</label>
+              <select id="trends-compare-mode" aria-label="How to choose previous comparison window">
+                <option value="auto" selected>Previous matching window</option>
+                <option value="custom">Custom previous window</option>
+              </select>
+            </div>
+            <div id="trends-prev-range-wrap" class="control-group custom-range-wrap hidden">
+              <label class="control-label" for="trends-prev-from">Prev from</label>
+              <input type="date" id="trends-prev-from" aria-label="Previous comparison start date" />
+              <label class="control-label" for="trends-prev-to">Prev to</label>
+              <input type="date" id="trends-prev-to" aria-label="Previous comparison end date" />
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="trends-topic-mode">Topic mode</label>
+              <select id="trends-topic-mode" aria-label="Aggregate trend topics by keyword type or phrase">
+                <option value="type" selected>Keyword types</option>
+                <option value="phrase">Top phrases</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="trends-keyword-limit">Keyword rows</label>
+              <input
+                id="trends-keyword-limit"
+                type="number"
+                min="3"
+                max="40"
+                step="1"
+                value="12"
+                inputmode="numeric"
+                aria-label="Maximum keyword rows to show"
+              />
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="trends-risk-lens">Risk lens</label>
+              <select id="trends-risk-lens" aria-label="Filter trends to high-risk compliance signals">
+                <option value="all" selected>All signals</option>
+                <option value="enforcement_heavy">Enforcement-focused</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="trends-min-cluster">Cluster size</label>
+              <input
+                id="trends-min-cluster"
+                type="number"
+                min="2"
+                max="20"
+                step="1"
+                value="2"
+                inputmode="numeric"
+                aria-label="Minimum items to show a cluster"
+              />
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="trends-cluster-tokens">Title match</label>
+              <input
+                id="trends-cluster-tokens"
+                type="number"
+                min="3"
+                max="12"
+                step="1"
+                value="6"
+                inputmode="numeric"
+                aria-label="Title token depth for clustering"
+              />
+            </div>
+            <div class="control-group trends-toolbar-checks">
+              <label class="focus-toggle">
+                <input type="checkbox" id="trends-include-all" aria-label="Include low-relevance items" />
+                <span class="focus-label">Include low-relevance</span>
+              </label>
+              <label class="focus-toggle">
+                <input type="checkbox" id="trends-include-archived" aria-label="Include archived items" />
+                <span class="focus-label">Include archived</span>
+              </label>
+            </div>
+            <div class="control-group">
+              <label class="control-label">&nbsp;</label>
+              <button type="button" id="trends-refresh-btn" class="btn-reload">Refresh</button>
+            </div>
+          </div>
+          <p id="trends-window-label" class="trends-window-label" aria-live="polite"></p>
+          <p id="trends-compare-active" class="trends-compare-active" aria-live="polite"></p>
+          <div id="trends-loading" class="feeds-loading">Loading analytics…</div>
+          <div id="trends-content" class="trends-content hidden">
+            <div class="trends-summary" id="trends-summary"></div>
+            <div class="trends-keyword-grid" id="trends-keyword-grid"></div>
+            <div class="trends-grid" id="trends-grid"></div>
+            <div class="trends-clusters-section">
+              <h3>Overlapping stories (context validation)</h3>
+              <p id="trends-clusters-empty" class="feeds-hint hidden">
+                No clusters for this window. Try more items, a longer window, fewer title keywords,
+                or a minimum cluster size of 2.
+              </p>
+              <div id="trends-clusters" class="trends-clusters"></div>
+            </div>
           </div>
         </div>
       </section>
@@ -325,6 +729,22 @@
         </button>
       </div>
       <div id="hidden-list" class="hidden-list"></div>
+    </div>
+    <div
+      id="story-surfaces-modal"
+      class="story-surfaces-modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="story-surfaces-modal-title"
+    >
+      <div class="story-surfaces-modal-backdrop" tabindex="-1"></div>
+      <div class="story-surfaces-modal-panel">
+        <div class="story-surfaces-modal-header">
+          <h3 id="story-surfaces-modal-title">Story coverage</h3>
+          <button type="button" class="story-surfaces-modal-close" aria-label="Close">×</button>
+        </div>
+        <div id="story-surfaces-modal-body" class="story-surfaces-modal-body"></div>
+      </div>
     </div>
 
     <script src="keyword-lists.js"></script>
