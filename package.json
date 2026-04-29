@@ -4,6 +4,7 @@
   "description": "RSS Intake enhanced web UI (static assets; requires companion API for full functionality).",
   "scripts": {
     "preview": "npx --yes serve public -l 4173",
+    "sync": "bash scripts/sync-root-from-public.sh",
     "verify": "bash scripts/verify-public-ui.sh"
   },
   "engines": {

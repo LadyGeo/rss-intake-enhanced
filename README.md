@@ -4,9 +4,11 @@ This repository holds the **enhanced web UI** for RSS Intake: HTML, CSS, and cli
 
 ## If you just want it to work
 
-1. **Prefer the desktop app** (macOS): install the **`.app` or `.dmg` from [Releases](https://github.com/LadyGeo/rss-intake-enhanced/releases)** when published. That serves the UI and the **`/api/...`** backend together, so nothing extra is required.
+1. **Full five-tab app in the browser (recommended):** use **[LadyGeo/RSS_Intake](https://github.com/LadyGeo/RSS_Intake)** — download the ZIP, run **`Start RSS Intake.command`**, then open **`http://localhost:3000`**. That repo includes the **Express API**, **SQLite**, ingest, and this **same five-tab UI** under `public/`.
 
-2. **Do not rely on “open the folder in a browser” or `python -m http.server` alone.** Those only serve static files. The UI calls **`/api/config`**, **`/api/items`**, etc. Without the API, you will see **“Failed to load”** or **“Server error”**.
+2. **macOS desktop `.app`:** when you publish builds, attach **`.app` / `.dmg` to [Releases](https://github.com/LadyGeo/rss-intake-enhanced/releases)** (or ship them from RSS_Intake). That bundles UI + API in one install.
+
+3. **This repo alone** is **static files only**. Do not rely on **`python -m http.server`** or “open HTML in the browser” without also running an API (see below). Otherwise you will see a **clear on-page message** and **“Server error”** on actions that call **`/api/...`**.
 
 ## Developers: preview the UI against a running API
 
@@ -45,7 +47,7 @@ Then use **`?api=`** or **`rss-intake-api-base`** as above.
 | Path | Purpose |
 |------|--------|
 | **`public/`** | **Source of truth** for the shipped UI (`index.html`, `thisisTHEapp.js`, styles, keywords). |
-| Root `index.html`, `thisisTHEapp.js`, … | **Mirrors `public/`** for the same five-tab app when you serve from the repo root; update both whenever you change the UI. |
+| Root `index.html`, `thisisTHEapp.js`, … | **Mirrors `public/`** — run **`npm run sync`** after editing `public/` so root stays identical. |
 | `data/` | Example digests / local data (not required to run the UI). |
 | `docs/` | Extra technical notes. |
 

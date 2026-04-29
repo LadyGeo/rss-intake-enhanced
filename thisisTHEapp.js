@@ -2431,8 +2431,14 @@ async function load() {
     updateIngestFooter(ingestHist.runs?.[0]);
     render(data.items ?? []);
   } catch (e) {
-    emptyEl.textContent =
-      "Failed to load. Start RSS Intake.app (or your API server), note its URL (e.g. http://127.0.0.1:50163), then open this page with ?api= that origin, or set localStorage rss-intake-api-base.";
+    emptyEl.innerHTML = [
+      "<p><strong>Could not reach the API.</strong> This five-tab UI needs the backend (<code>/api/config</code>, <code>/api/items</code>, …).</p>",
+      '<p class="empty-hint"><strong>Easiest:</strong> run the full stack from ',
+      '<a href="https://github.com/LadyGeo/RSS_Intake" target="_blank" rel="noopener noreferrer">github.com/LadyGeo/RSS_Intake</a>',
+      " (download ZIP → <code>Start RSS Intake.command</code> → open <code>http://localhost:3000</code>).</p>",
+      "<p class=\"empty-hint\"><strong>Previewing this repo only:</strong> start your API (e.g. RSS Intake desktop), then reload with ",
+      "<code>?api=http://127.0.0.1:YOUR_PORT</code> or <code>localStorage.setItem('rss-intake-api-base','http://127.0.0.1:YOUR_PORT')</code>.</p>",
+    ].join("");
     emptyEl.classList.remove("hidden");
   } finally {
     loadingEl.classList.add("hidden");
